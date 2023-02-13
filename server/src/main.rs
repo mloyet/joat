@@ -13,7 +13,11 @@ fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8000")?;
 
     for stream in listener.incoming() {
-      echoer(stream?)?;
+      let stream = stream?;
+      println!("Attached to client {:?}", stream);
+      if let Err(_) = echoer(stream) {
+        println!("Disconnected.");
+      }
     }
 
     Ok(())
