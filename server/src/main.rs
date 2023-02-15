@@ -4,23 +4,16 @@ use protocol::{read_msg, send_msg, Message};
 
 fn handler(s: TcpStream) -> std::io::Result<()> {
   loop {
+    use Message::*;
+    send_msg(&s, ReadInput)?;
+
     match read_msg(&s) {
       Ok(msg) => {
-        use Message::*;
         match msg {
-          HELLO => {
-            println!("Device said hello!");
-            send_msg(&s, ACK)?;
+          Line(str) => {
+            println!("Got a message: {}", str);
           }
-          MSG(m) => {
-            println!("Got a message: {}", m);
-            send_msg(&s, ACK)?;
-          }
-          GOODBYE => {
-            println!("Got goodbye, detatching");
-            return Ok(());
-          }
-          ACK => panic!("Unexpected ACK"),
+          _ => panic!("Unexpected message")
         };
       }
       Err(e) => println!("Failed to read message: {:?}", e),
