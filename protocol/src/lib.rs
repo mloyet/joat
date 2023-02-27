@@ -2,11 +2,51 @@ use serde::{Deserialize, Serialize};
 use std::net::TcpStream;
 
 #[derive(Serialize, Deserialize)]
+pub enum Suit {
+  HEART,
+  DIAMOND,
+  SPADE,
+  CLUB,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum Rank {
+  ACE,
+  TWO,
+  THREE,
+  FOUR,
+  FIVE,
+  SIX,
+  SEVEN,
+  EIGHT,
+  NINE,
+  TEN,
+  JACK,
+  QUEEN,
+  KING
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Card(Suit, Rank);
+
+#[derive(Serialize, Deserialize)]
 pub enum Message {
-  HELLO,
-  MSG(String),
-  GOODBYE,
-  ACK,
+
+  // Server -> Device
+  Print(String),
+  Clear,
+  ReadInput,
+  PrintCard(Card),
+  RequestScan,
+
+  // Device -> Server
+  Line(String),
+  DetectedCards(Vec<Card>),
+
+  // Misc
+  DEBUG(String),
+  ERR(String),
+  ACK
 }
 
 // These functions seem kind of silly, but since this is a shared library by both the server and
