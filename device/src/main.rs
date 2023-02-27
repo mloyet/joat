@@ -1,16 +1,16 @@
 use std::{net::TcpStream, io::{stdin, BufRead}};
-use protocol::{Message, send_msg, read_msg};
+use protocol::{Message, Protocol};
 
-fn handler(s: TcpStream) -> std::io::Result<()> {
+fn handler(mut p: Protocol) -> std::io::Result<()> {
   loop {
-    match read_msg(&s) {
+    match p.read_msg() {
       Ok(msg) => {
         use Message::*;
         match msg {
           ReadInput => {
             println!("Server requested a line, send something:");
             let line = stdin().lock().lines().next().unwrap().unwrap();
-            send_msg(&s, Line(line))?;
+            p.send_msg(Line(line))?;
           }
           _ => panic!("Unexpected message")
         };
@@ -22,8 +22,9 @@ fn handler(s: TcpStream) -> std::io::Result<()> {
 
 fn main() -> std::io::Result<()> {
   let conn = TcpStream::connect("127.0.0.1:8000")?;
+  let prtcl = Protocol::new(conn);
 
-  handler(conn)?;
+  handler(prtcl)?;
 
   Ok(())
 }

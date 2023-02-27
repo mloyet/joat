@@ -1,13 +1,12 @@
-use std::net::{TcpListener, TcpStream};
+use std::net::TcpListener;
+use protocol::{Protocol, Message};
 
-use protocol::{read_msg, send_msg, Message};
-
-fn handler(s: TcpStream) -> std::io::Result<()> {
+fn handler(mut p: Protocol) -> std::io::Result<()> {
   loop {
     use Message::*;
-    send_msg(&s, ReadInput)?;
+    p.send_msg(ReadInput)?;
 
-    match read_msg(&s) {
+    match p.read_msg() {
       Ok(msg) => {
         match msg {
           Line(str) => {
@@ -27,7 +26,8 @@ fn main() -> std::io::Result<()> {
   for stream in listener.incoming() {
     let stream = stream?;
     println!("Attached to client {:?}", stream);
-    if let Err(_) = handler(stream) {
+    let prtcl = protocol::Protocol::new(stream);
+    if let Err(_) = handler(prtcl) {
       println!("Disconnected.");
     }
   }
