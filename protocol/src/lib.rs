@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{fs::File, net::TcpStream, io::Write};
+use std::{fs::File, io::Write, net::TcpStream};
 
 #[derive(Serialize, Deserialize)]
 pub enum Suit {
@@ -73,14 +73,15 @@ impl Protocol {
     self.logfile = Some(f);
   }
 
-  pub fn log_send(&mut self, msg: &Message) {
+  fn log_send(&mut self, msg: &Message) {
     if let Some(f) = &mut self.logfile {
       f.write(b">").expect("Couldn't write to logile");
       serde_json::to_writer(&*f, &msg).expect("Couldn't dump message to logfile");
       f.write(b"\n").expect("Couldn't write to logile");
     }
   }
-  pub fn log_receive(&mut self, msg: &Message) {
+
+  fn log_receive(&mut self, msg: &Message) {
     if let Some(f) = &mut self.logfile {
       f.write(b"<").expect("Couldn't write to logile");
       serde_json::to_writer(&*f, &msg).expect("Couldn't dump message to logfile");
