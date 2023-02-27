@@ -1,4 +1,4 @@
-use std::net::TcpListener;
+use std::{net::TcpListener, fs::File};
 use protocol::{Protocol, Message};
 
 fn handler(mut p: Protocol) -> std::io::Result<()> {
@@ -26,7 +26,11 @@ fn main() -> std::io::Result<()> {
   for stream in listener.incoming() {
     let stream = stream?;
     println!("Attached to client {:?}", stream);
-    let prtcl = protocol::Protocol::new(stream);
+
+    let mut prtcl = protocol::Protocol::new(stream);
+    let logfile = File::create("server.log")?;
+    prtcl.attach_logfile(logfile);
+
     if let Err(_) = handler(prtcl) {
       println!("Disconnected.");
     }
