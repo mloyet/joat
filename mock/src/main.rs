@@ -16,6 +16,7 @@ fn expect(mut prtcl: Protocol, commands: Vec<Command>) {
           panic!("Message received did not match");
         }
       },
+      Command::Comment(s) => println!("{}", s),
     }
   }
 }

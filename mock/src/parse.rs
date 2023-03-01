@@ -5,6 +5,7 @@ use protocol::Message;
 pub enum Command {
   Send(Message),
   Receive(Message),
+  Comment(String),
 }
 
 pub fn parse(filename: &str) -> Vec<Command> {
@@ -20,11 +21,11 @@ pub fn parse(filename: &str) -> Vec<Command> {
       continue;
     }
     let mut line = line.to_string();
-    let obj_str = line.split_off(1);
-    let obj = serde_json::from_str(obj_str.as_str()).expect("Failed to parse");
+    let body = line.split_off(1);
     let cmd = match line.chars().next() {
-      Some('>') => Command::Send(obj),
-      Some('<') => Command::Receive(obj),
+      Some('>') => Command::Send(serde_json::from_str(body.as_str()).unwrap()),
+      Some('<') => Command::Receive(serde_json::from_str(body.as_str()).unwrap()),
+      Some('#') => Command::Comment(body),
       x => panic!("Unexpected start of line: {:?}", x),
     };
     cmds.push(cmd);
