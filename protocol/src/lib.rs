@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{fs::File, io::Write, net::TcpStream};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub enum Suit {
   HEART,
   DIAMOND,
@@ -9,7 +9,7 @@ pub enum Suit {
   CLUB,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub enum Rank {
   ACE,
   TWO,
@@ -26,10 +26,10 @@ pub enum Rank {
   KING,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub struct Card(Suit, Rank);
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub enum Message {
   // Server -> Device
   Print(String),

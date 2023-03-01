@@ -1,22 +1,18 @@
-use std::{net::TcpListener, fs::File};
-use protocol::{Protocol, Message};
+use protocol::{Message, Protocol};
+use std::{fs::File, net::TcpListener};
 
 fn handler(mut p: Protocol) -> std::io::Result<()> {
   loop {
     use Message::*;
     p.send_msg(ReadInput)?;
 
-    match p.read_msg() {
-      Ok(msg) => {
-        match msg {
-          Line(str) => {
-            println!("Got a message: {}", str);
-          }
-          _ => panic!("Unexpected message")
-        };
+    let msg = p.read_msg()?;
+    match msg {
+      Line(str) => {
+        println!("Got a message: {}", str);
       }
-      Err(e) => println!("Failed to read message: {:?}", e),
-    }
+      _ => panic!("Unexpected message"),
+    };
   }
 }
 
