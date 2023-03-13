@@ -1,0 +1,7 @@
+>"ReadInput"
+#Type Hello into device
+<{"Line":"Hello"}
+
+>"ReadInput"
+#Type Goodbye into device
+<{"Line":"Goodbye"}

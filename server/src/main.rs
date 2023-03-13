@@ -1,33 +1,33 @@
-use std::net::{TcpListener, TcpStream};
+use protocol::{Message, Protocol};
+use std::{fs::File, net::TcpListener};
 
-use protocol::{read_msg, send_msg, Message};
-
-fn handler(s: TcpStream) -> std::io::Result<()> {
+fn handler(mut p: Protocol) -> std::io::Result<()> {
   loop {
     use Message::*;
-    send_msg(&s, ReadInput)?;
+    p.send_msg(ReadInput)?;
 
-    match read_msg(&s) {
-      Ok(msg) => {
-        match msg {
-          Line(str) => {
-            println!("Got a message: {}", str);
-          }
-          _ => panic!("Unexpected message")
-        };
+    let msg = p.read_msg()?;
+    match msg {
+      Line(str) => {
+        println!("Got a message: {}", str);
       }
-      Err(e) => println!("Failed to read message: {:?}", e),
-    }
+      _ => panic!("Unexpected message"),
+    };
   }
 }
 
 fn main() -> std::io::Result<()> {
-  let listener = TcpListener::bind("127.0.0.1:8000")?;
+  let listener = TcpListener::bind("0.0.0.0:8000")?;
 
   for stream in listener.incoming() {
     let stream = stream?;
     println!("Attached to client {:?}", stream);
-    if let Err(_) = handler(stream) {
+
+    let mut prtcl = protocol::Protocol::new(stream);
+    let logfile = File::create("server.log")?;
+    prtcl.attach_logfile(logfile);
+
+    if let Err(_) = handler(prtcl) {
       println!("Disconnected.");
     }
   }
