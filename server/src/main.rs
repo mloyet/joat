@@ -17,7 +17,7 @@ fn handler(mut p: Protocol) -> std::io::Result<()> {
 }
 
 fn main() -> std::io::Result<()> {
-  let listener = TcpListener::bind("127.0.0.1:8000")?;
+  let listener = TcpListener::bind("0.0.0.0:8000")?;
 
   for stream in listener.incoming() {
     let stream = stream?;
