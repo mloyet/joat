@@ -21,9 +21,14 @@ impl Manager {
   /// Create a new manager. Should be a singleton, but not enforced.
   pub fn new(keyboard_name: &str) -> Self {
     let (sender, receiver) = channel();
-    let prot = Protocol::new(TcpStream::connect("127.0.0.1:8000").unwrap());
 
+    println!("[manager] Creating protocol");
+    let prot = Protocol::new(TcpStream::connect("127.0.0.1:8000").unwrap());
+    println!("[manager] done.");
+
+    println!("[manager] Creating Numpad");
     Numpad::start(keyboard_name, sender);
+    println!("[manager] done.");
 
     Self { prot, receiver }
   }

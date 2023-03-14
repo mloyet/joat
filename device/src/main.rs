@@ -7,6 +7,8 @@ mod numpad;
 static KEYBOARD: &str = "/dev/usb";
 
 fn main() {
+  println!("[main] Creating manager");
   let mut man = Manager::new(KEYBOARD);
+  println!("[main] Starting manager");
   man.run();
 }

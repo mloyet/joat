@@ -28,6 +28,8 @@ impl Numpad {
   fn run(&mut self) {
     loop {
       let line: String = self.readline();
+      println!("[numpad] Received line: {}", line);
+
       self.sender.send(Message::Line(line)).unwrap();
     }
   }
