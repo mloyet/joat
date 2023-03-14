@@ -1,5 +1,6 @@
 //! The numpad peripheral implementation.
 
+use std::fmt::Display;
 use std::fs::File;
 use std::io::Read;
 use std::sync::mpsc::Sender;
@@ -39,6 +40,7 @@ impl Numpad {
     let mut ascii = Vec::new();
     loop {
       let event = InputEvent::blocking_read_from_file(&mut self.file);
+      println!("{}", event);
 
       // event type 1 is keypress.
       // ignore all others.
@@ -74,7 +76,6 @@ impl Numpad {
 /// What comes out of event device files.
 ///
 /// https://github.com/raspberrypi/linux/blob/rpi-5.15.y/drivers/input/input-compat.h.
-#[repr(C, packed)]
 struct InputEvent {
   sec: u32,
   usec: u32,
@@ -111,4 +112,11 @@ impl InputEvent {
       value,
     }
   }
+}
+
+impl Display for InputEvent {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      write!(f, "({}.{}) ", self.sec, self.usec)?;
+      write!(f, "typ: {} code: {} value: {}", self.typ, self.code, self.value)
+    }
 }
