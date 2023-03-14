@@ -21,7 +21,7 @@ impl Numpad {
   pub fn start(filename: &str, sender: Sender<Message>) {
     let file = File::open(filename).unwrap();
     let mut numpad = Self { file, sender };
-    thread::spawn(move || numpad.run());
+    thread::Builder::new().name("numpad".to_string()).spawn(move || numpad.run()).unwrap();
   }
 
   /// Private worker thread loop

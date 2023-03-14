@@ -3,8 +3,8 @@ use manager::Manager;
 mod manager;
 mod numpad;
 
-// Not the actual name
-static KEYBOARD: &str = "/dev/usb";
+// Is this always the correct device?
+static KEYBOARD: &str = "/dev/input/event0";
 
 fn main() {
   println!("[main] Creating manager");
