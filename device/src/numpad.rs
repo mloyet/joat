@@ -44,7 +44,7 @@ impl Numpad {
 
       // event type 1 is keypress.
       // ignore all others.
-      if event.typ != 1 {
+      if event.value != 1 {
         continue;
       }
 
@@ -116,7 +116,7 @@ impl InputEvent {
 
 impl Display for InputEvent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      write!(f, "({}.{}) ", self.sec, self.usec)?;
+      write!(f, "({}.{:0>6}) ", self.sec, self.usec)?;
       write!(f, "typ: {} code: {} value: {}", self.typ, self.code, self.value)
     }
 }
