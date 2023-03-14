@@ -87,7 +87,7 @@ impl InputEvent {
   /// Hopefully this works as intended and is blocking...
   fn blocking_read_from_file(file: &mut File) -> Self {
 
-    let mut raw_struct = [0; 32];
+    let mut raw_struct = [0; 16];
     file.read_exact(&mut raw_struct).unwrap();
 
     let (sec, rest) = raw_struct.split_at(4);
