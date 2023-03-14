@@ -86,25 +86,22 @@ struct InputEvent {
 impl InputEvent {
   /// Hopefully this works as intended and is blocking...
   fn blocking_read_from_file(file: &mut File) -> Self {
-    let mut sec = [0; 4];
-    file.read_exact(&mut sec).unwrap();
-    let sec = u32::from_ne_bytes(sec);
 
-    let mut usec = [0; 4];
-    file.read_exact(&mut usec).unwrap();
-    let usec = u32::from_ne_bytes(usec);
+    let mut raw_struct = [0; 32];
+    file.read_exact(&mut raw_struct).unwrap();
 
-    let mut typ = [0; 2];
-    file.read_exact(&mut typ).unwrap();
-    let typ = u16::from_ne_bytes(typ);
+    let (sec, rest) = raw_struct.split_at(4);
+    let sec = u32::from_ne_bytes(sec.try_into().unwrap());
 
-    let mut code = [0; 2];
-    file.read_exact(&mut code).unwrap();
-    let code = u16::from_ne_bytes(code);
+    let (usec, rest) = rest.split_at(4);
+    let usec = u32::from_ne_bytes(usec.try_into().unwrap());
 
-    let mut value = [0; 4];
-    file.read_exact(&mut value).unwrap();
-    let value = i32::from_ne_bytes(value);
+    let (typ, rest) = rest.split_at(2);
+    let typ = u16::from_ne_bytes(typ.try_into().unwrap());
+
+    let (code, value) = rest.split_at(2);
+    let code = u16::from_ne_bytes(code.try_into().unwrap());
+    let value = i32::from_ne_bytes(value.try_into().unwrap());
 
     Self {
       sec,
