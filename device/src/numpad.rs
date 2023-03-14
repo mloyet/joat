@@ -40,7 +40,6 @@ impl Numpad {
     let mut ascii = Vec::new();
     loop {
       let event = InputEvent::blocking_read_from_file(&mut self.file);
-      println!("{}", event);
 
       // event type 1 is keypress.
       // ignore all others.
