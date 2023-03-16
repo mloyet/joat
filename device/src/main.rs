@@ -1,31 +1,14 @@
-use protocol::{Message, Protocol};
-use std::{
-  io::{stdin, BufRead},
-  net::TcpStream,
-};
+use manager::Manager;
 
-fn handler(mut p: Protocol) -> std::io::Result<()> {
-  loop {
-    let msg = p.read_msg()?;
-    use Message::*;
-    match msg {
-      ReadInput => {
-        println!("Server requested a line, send something:");
-        let line = stdin().lock().lines().next().unwrap().unwrap();
-        p.send_msg(Line(line))?;
-      }
-      _ => panic!("Unexpected message"),
-    };
-  }
-}
+mod manager;
+mod numpad;
 
-fn main() -> std::io::Result<()> {
-  let conn = TcpStream::connect("127.0.0.1:8000")?;
-  let prtcl = Protocol::new(conn);
+// Is this always the correct device?
+static KEYBOARD: &str = "/dev/input/event0";
 
-  if let Err(_) = handler(prtcl) {
-    println!("Disconnected");
-  }
-
-  Ok(())
+fn main() {
+  println!("[main] Creating manager");
+  let mut man = Manager::new(KEYBOARD);
+  println!("[main] Starting manager");
+  man.run();
 }
