@@ -17,7 +17,7 @@ pub enum LCDCommand {
 /// to be executed asynchronously.
 pub struct LCD {
   file: File,
-  receiver: Receiver<LCDCommand>
+  receiver: Receiver<LCDCommand>,
 }
 
 impl LCD {

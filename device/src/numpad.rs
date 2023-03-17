@@ -8,6 +8,8 @@ use std::thread;
 
 use protocol::Message;
 
+use crate::lcd::LCDCommand;
+
 /// Object that encapsulates the numpad peripheral.
 ///
 /// Continously reads from the file and sends messages along the send
@@ -15,13 +17,14 @@ use protocol::Message;
 pub struct Numpad {
   file: File,
   sender: Sender<Message>,
+  to_lcd: Sender<LCDCommand>,
 }
 
 impl Numpad {
   /// Public static function to fork off worker thread
-  pub fn start(filename: &str, sender: Sender<Message>) {
+  pub fn start(filename: &str, sender: Sender<Message>, to_lcd: Sender<LCDCommand>) {
     let file = OpenOptions::new().read(true).open(filename).unwrap();
-    let mut numpad = Self { file, sender };
+    let mut numpad = Self { file, sender, to_lcd };
     thread::Builder::new().name("numpad".to_string()).spawn(move || numpad.run()).unwrap();
   }
 
@@ -38,6 +41,13 @@ impl Numpad {
   /// Manage reading and filtering the scancodes into a String.
   fn readline(&mut self) -> String {
     let mut ascii = Vec::new();
+
+      // helper for matching logic
+      let mut push_and_send = |c: char| {
+        ascii.push(c);
+        self.to_lcd.send(LCDCommand::Write(c.into())).unwrap();
+      };
+
     loop {
       let event = InputEvent::blocking_read_from_file(&mut self.file);
 
@@ -50,20 +60,20 @@ impl Numpad {
       // codes taken from the linux source code.
       // https://github.com/raspberrypi/linux/blob/rpi-5.15.y/include/uapi/linux/input-event-codes.h.
       match event.code {
-        55 => ascii.push('*'),
-        71 => ascii.push('7'),
-        72 => ascii.push('8'),
-        73 => ascii.push('9'),
-        74 => ascii.push('-'),
-        75 => ascii.push('4'),
-        76 => ascii.push('5'),
-        77 => ascii.push('6'),
-        78 => ascii.push('+'),
-        79 => ascii.push('1'),
-        80 => ascii.push('2'),
-        81 => ascii.push('3'),
-        82 => ascii.push('0'),
-        98 => ascii.push('/'),
+        55 => push_and_send('*'),
+        71 => push_and_send('7'),
+        72 => push_and_send('8'),
+        73 => push_and_send('9'),
+        74 => push_and_send('-'),
+        75 => push_and_send('4'),
+        76 => push_and_send('5'),
+        77 => push_and_send('6'),
+        78 => push_and_send('+'),
+        79 => push_and_send('1'),
+        80 => push_and_send('2'),
+        81 => push_and_send('3'),
+        82 => push_and_send('0'),
+        98 => push_and_send('/'),
         // equal/enter cuts off the string.
         96 | 117 => return String::from_iter(ascii),
         _ => {}

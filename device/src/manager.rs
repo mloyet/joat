@@ -31,7 +31,7 @@ impl Manager {
     println!("[manager] done.");
 
     println!("[manager] Creating Numpad");
-    Numpad::start(numpad_name, numpad_sender);
+    Numpad::start(numpad_name, numpad_sender, lcd_sender.clone());
     println!("[manager] done.");
 
     println!("[manager] Creating LCD");
@@ -58,6 +58,7 @@ impl Manager {
         Print(s) => self.lcd_sender.send(LCDCommand::Write(s)).unwrap(),
         Clear => self.lcd_sender.send(LCDCommand::Clear).unwrap(),
         ReadInput => {
+          self.lcd_sender.send(LCDCommand::Write("Give Input: ".to_string())).unwrap();
           let msg = self.numpad_receiver.recv().unwrap();
           self.prot.send_msg(msg).expect("Message send failed");
         }

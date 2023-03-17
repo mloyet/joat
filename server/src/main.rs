@@ -10,7 +10,7 @@ fn handler(mut p: Protocol) -> std::io::Result<()> {
     match msg {
       Line(str) => {
         println!("Got a message: {}", str);
-        p.send_msg(Print(str)).unwrap();
+        p.send_msg(Print("Got: ".to_string() + &str)).unwrap();
       }
       _ => panic!("Unexpected message"),
     };
