@@ -9,8 +9,8 @@ fn handler(mut p: Protocol) -> std::io::Result<()> {
     let msg = p.read_msg()?;
     match msg {
       Line(str) => {
-        println!("Got a message: {}\n", str);
-        p.send_msg(Print("Got: ".to_string() + &str)).unwrap();
+        println!("Got a message: {}", str);
+        p.send_msg(Print("Got: ".to_string() + &str + "\n")).unwrap();
       }
       _ => panic!("Unexpected message"),
     };
