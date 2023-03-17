@@ -1,6 +1,6 @@
 //! LCD peripheral implementation
 
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::sync::mpsc::Receiver;
 use std::thread;
@@ -23,7 +23,7 @@ pub struct LCD {
 impl LCD {
   /// Public static funciton to fork off worker thread
   pub fn start(filename: &str, receiver: Receiver<LCDCommand>) {
-    let file = File::open(filename).unwrap();
+    let file = OpenOptions::new().write(true).open(filename).unwrap();
     let mut lcd = Self { file, receiver };
     thread::Builder::new().name("lcd".to_string()).spawn(move || lcd.run()).unwrap();
   }
