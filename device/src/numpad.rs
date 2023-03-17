@@ -1,7 +1,7 @@
 //! The numpad peripheral implementation.
 
 use std::fmt::Display;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::Read;
 use std::sync::mpsc::Sender;
 use std::thread;
@@ -20,7 +20,7 @@ pub struct Numpad {
 impl Numpad {
   /// Public static function to fork off worker thread
   pub fn start(filename: &str, sender: Sender<Message>) {
-    let file = File::open(filename).unwrap();
+    let file = OpenOptions::new().read(true).open(filename).unwrap();
     let mut numpad = Self { file, sender };
     thread::Builder::new().name("numpad".to_string()).spawn(move || numpad.run()).unwrap();
   }
