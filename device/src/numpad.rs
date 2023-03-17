@@ -24,8 +24,15 @@ impl Numpad {
   /// Public static function to fork off worker thread
   pub fn start(filename: &str, sender: Sender<Message>, to_lcd: Sender<LCDCommand>) {
     let file = OpenOptions::new().read(true).open(filename).unwrap();
-    let mut numpad = Self { file, sender, to_lcd };
-    thread::Builder::new().name("numpad".to_string()).spawn(move || numpad.run()).unwrap();
+    let mut numpad = Self {
+      file,
+      sender,
+      to_lcd,
+    };
+    thread::Builder::new()
+      .name("numpad".to_string())
+      .spawn(move || numpad.run())
+      .unwrap();
   }
 
   /// Private worker thread loop
@@ -42,11 +49,11 @@ impl Numpad {
   fn readline(&mut self) -> String {
     let mut ascii = Vec::new();
 
-      // helper for matching logic
-      let mut push_and_send = |c: char| {
-        ascii.push(c);
-        self.to_lcd.send(LCDCommand::Write(c.into())).unwrap();
-      };
+    // helper for matching logic
+    let mut push_and_send = |c: char| {
+      ascii.push(c);
+      self.to_lcd.send(LCDCommand::Write(c.into())).unwrap();
+    };
 
     loop {
       let event = InputEvent::blocking_read_from_file(&mut self.file);
@@ -75,7 +82,10 @@ impl Numpad {
         82 => push_and_send('0'),
         98 => push_and_send('/'),
         // equal/enter cuts off the string.
-        96 | 117 => return String::from_iter(ascii),
+        96 | 117 => {
+          self.to_lcd.send(LCDCommand::Write("\n".into())).unwrap();
+          return String::from_iter(ascii);
+        }
         _ => {}
       }
     }
@@ -96,7 +106,6 @@ struct InputEvent {
 impl InputEvent {
   /// Hopefully this works as intended and is blocking...
   fn blocking_read_from_file(file: &mut File) -> Self {
-
     let mut raw_struct = [0; 16];
     file.read_exact(&mut raw_struct).unwrap();
 
@@ -124,8 +133,12 @@ impl InputEvent {
 }
 
 impl Display for InputEvent {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      write!(f, "({}.{:0>6}) ", self.sec, self.usec)?;
-      write!(f, "typ: {} code: {} value: {}", self.typ, self.code, self.value)
-    }
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(f, "({}.{:0>6}) ", self.sec, self.usec)?;
+    write!(
+      f,
+      "typ: {} code: {} value: {}",
+      self.typ, self.code, self.value
+    )
+  }
 }

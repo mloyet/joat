@@ -42,7 +42,6 @@ impl LCD {
 
   fn write(&mut self, s: &str) {
     self.file.write_all(s.as_bytes()).unwrap();
-    self.file.write_all(&[10]).unwrap(); // newline
   }
 
   fn clear(&mut self) {
