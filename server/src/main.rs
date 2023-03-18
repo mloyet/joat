@@ -10,6 +10,7 @@ fn handler(mut p: Protocol) -> std::io::Result<()> {
     match msg {
       Line(str) => {
         println!("Got a message: {}", str);
+        p.send_msg(Print("Got: ".to_string() + &str + "\n")).unwrap();
       }
       _ => panic!("Unexpected message"),
     };
@@ -26,6 +27,8 @@ fn main() -> std::io::Result<()> {
     let mut prtcl = protocol::Protocol::new(stream);
     let logfile = File::create("server.log")?;
     prtcl.attach_logfile(logfile);
+
+    prtcl.send_msg(Message::Clear).expect("Failed to send screen clear");
 
     if let Err(_) = handler(prtcl) {
       println!("Disconnected.");
