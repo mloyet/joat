@@ -25,10 +25,10 @@ pub const DIAMOND: char = '\x01';
 pub const SPADE: char = '\x02';
 pub const CLUB: char = '\x03';
 
-const SUITS_INIT: &str = "\x0cLG00000091f0e040000;\
-                          \x0cLG10000040e1f0e0400;\
-                          \x0cLG200040e0e1f040e00;\
-                          \x0cLG3000e0e1f1f040e00;";
+const SUITS_INIT: &str = "\x1b[LG00000091f0e040000;\
+                          \x1b[LG10000040e1f0e0400;\
+                          \x1b[LG200040e0e1f040e00;\
+                          \x1b[LG3000e0e1f1f040e00;";
 
 impl LCD {
   /// Public static funciton to fork off worker thread
