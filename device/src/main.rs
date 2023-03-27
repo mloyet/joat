@@ -4,7 +4,7 @@ mod manager;
 mod numpad;
 mod lcd;
 
-static KEYBOARD: &str = "/dev/input/event1";
+static KEYBOARD: &str = "/dev/input/event0";
 static LCD: &str = "/dev/lcd";
 
 fn main() {

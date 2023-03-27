@@ -25,7 +25,7 @@ pub const DIAMOND: char = '\x01';
 pub const SPADE: char = '\x02';
 pub const CLUB: char = '\x03';
 
-const SUITS_INIT: &str = "\x1b[LG00000091f0e040000;\
+const SUITS_INIT: &str = "\x1b[LG000000a1f0e040000;\
                           \x1b[LG10000040e1f0e0400;\
                           \x1b[LG200040e0e1f040e00;\
                           \x1b[LG3000e0e1f1f040e00;";
