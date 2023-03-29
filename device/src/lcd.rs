@@ -8,7 +8,7 @@ use std::thread;
 /// A command that can be sent to the LCD screen
 pub enum LCDCommand {
   Write(String),
-  Clear
+  Clear,
 }
 
 /// Object that encapsulates the LCD peripheral.
@@ -25,7 +25,10 @@ impl LCD {
   pub fn start(filename: &str, receiver: Receiver<LCDCommand>) {
     let file = OpenOptions::new().write(true).open(filename).unwrap();
     let mut lcd = Self { file, receiver };
-    thread::Builder::new().name("lcd".to_string()).spawn(move || lcd.run()).unwrap();
+    thread::Builder::new()
+      .name("lcd".to_string())
+      .spawn(move || lcd.run())
+      .unwrap();
   }
 
   /// Private worker thread loop
@@ -35,7 +38,7 @@ impl LCD {
       use LCDCommand::*;
       match cmd {
         Write(s) => self.write(&s),
-        Clear => self.clear()
+        Clear => self.clear(),
       }
     }
   }
