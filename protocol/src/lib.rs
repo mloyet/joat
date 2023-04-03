@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{fs::File, io::Write, net::TcpStream};
+use std::{fmt::Display, fs::File, io::Write, net::TcpStream};
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum Suit {
@@ -27,7 +27,7 @@ pub enum Rank {
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]
-pub struct Card(Suit, Rank);
+pub struct Card(pub Suit, pub Rank);
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum Message {
@@ -105,5 +105,36 @@ impl Protocol {
       self.log_receive(msg);
     }
     res
+  }
+}
+
+impl Display for Suit {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      Suit::HEART => write!(f, "Hearts"),
+      Suit::DIAMOND => write!(f, "Diamonds"),
+      Suit::SPADE => write!(f, "Spades"),
+      Suit::CLUB => write!(f, "Clubs"),
+    }
+  }
+}
+
+impl Display for Rank {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      Rank::ACE => write!(f, "Ace"),
+      Rank::TWO => write!(f, "Two"),
+      Rank::THREE => write!(f, "Three"),
+      Rank::FOUR => write!(f, "Four"),
+      Rank::FIVE => write!(f, "Five"),
+      Rank::SIX => write!(f, "Six"),
+      Rank::SEVEN => write!(f, "Seven"),
+      Rank::EIGHT => write!(f, "Eight"),
+      Rank::NINE => write!(f, "Nine"),
+      Rank::TEN => write!(f, "Ten"),
+      Rank::JACK => write!(f, "Jack"),
+      Rank::QUEEN => write!(f, "Queen"),
+      Rank::KING => write!(f, "King"),
+    }
   }
 }

@@ -6,7 +6,9 @@ use std::{
   time::Duration,
 };
 
-use crate::bitmaps::{KING, SPADE};
+use protocol::{Card, Rank, Suit};
+
+use crate::bitmaps::{CLUBS, DIAMONDS, HEARTS, JACK, KING, QUEEN, SPADES};
 
 pub struct Printer {
   file: File,
@@ -25,24 +27,9 @@ impl Printer {
   /// Private worker thread loop
   fn run(&mut self) {
     self.initialize();
-    self.print_bitmap(376, SPADE);
+    self.print_bitmap(376, SPADES[1]);
     self.print_bitmap(376, KING);
-  }
-
-  fn write1(&mut self, b: u8) {
-    self.file.write_all(&[b]).unwrap();
-  }
-
-  fn write2(&mut self, b1: u8, b2: u8) {
-    self.file.write_all(&[b1, b2]).unwrap();
-  }
-
-  fn write4(&mut self, b1: u8, b2: u8, b3: u8, b4: u8) {
-    self.file.write_all(&[b1, b2, b3, b4]).unwrap();
-  }
-
-  fn wait(&self) {
-    thread::sleep(Duration::from_millis(100));
+    self.write_card(&Card(Suit::SPADE, Rank::KING))
   }
 
   fn initialize(&mut self) {
@@ -62,6 +49,95 @@ impl Printer {
       .file
       .write_all("Initialization Complete.\n".as_bytes())
       .unwrap();
+  }
+
+  fn write_card(&mut self, card: &Card) {
+    use Suit::*;
+    match card {
+      Card(SPADE, r) => self.write_suit(SPADES, SPADE, r),
+      Card(CLUB, r) => self.write_suit(CLUBS, CLUB, r),
+      Card(HEART, r) => self.write_suit(HEARTS, HEART, r),
+      Card(DIAMOND, r) => self.write_suit(DIAMONDS, DIAMOND, r),
+    };
+  }
+
+  fn write_suit(&mut self, suits: &[&[u8]], suit: Suit, rank: &Rank) {
+    self.align_left();
+    self.write(format!("{}\n", to_char(rank)));
+    self.write(format!("{} of {}\n", rank, suit));
+
+    match rank {
+        Rank::ACE => {
+          self.write("\n\n\n\n".to_string());
+          self.print_bitmap(376, suits[0]);
+          self.write("\n\n\n\n".to_string());
+        },
+        Rank::TWO => {
+          self.write("\n\n".to_string());
+          self.print_bitmap(376, suits[0]);
+          self.print_bitmap(376, suits[0]);
+          self.write("\n\n".to_string());
+        },
+        Rank::THREE => {
+          self.print_bitmap(376, suits[0]);
+          self.print_bitmap(376, suits[0]);
+          self.print_bitmap(376, suits[0]);
+        },
+        Rank::FOUR => {
+          self.write("\n".to_string());
+          self.print_bitmap(376, suits[1]);
+          self.write("\n".to_string());
+          self.print_bitmap(376, suits[1]);
+          self.write("\n".to_string());
+        },
+        Rank::FIVE => {
+          self.print_bitmap(376, suits[1]);
+          self.print_bitmap(376, suits[0]);
+          self.print_bitmap(376, suits[1]);
+        },
+        Rank::SIX => {
+          self.print_bitmap(376, suits[1]);
+          self.print_bitmap(376, suits[1]);
+          self.print_bitmap(376, suits[1]);
+        },
+        Rank::SEVEN =>{
+          self.print_bitmap(376, suits[1]);
+          self.print_bitmap(376, suits[2]);
+          self.print_bitmap(376, suits[1]);
+        },
+        Rank::EIGHT => {
+          self.print_bitmap(376, suits[2]);
+          self.print_bitmap(376, suits[2]);
+          self.print_bitmap(376, suits[1]);
+        },
+        Rank::NINE => {
+          self.print_bitmap(376, suits[2]);
+          self.print_bitmap(376, suits[2]);
+          self.print_bitmap(376, suits[2]);
+        },
+        Rank::TEN => {
+          self.print_bitmap(376, suits[1]);
+          self.print_bitmap(376, suits[2]);
+          self.print_bitmap(376, suits[1]);
+          self.print_bitmap(376, suits[2]);
+        },
+        Rank::JACK => {
+          self.print_bitmap(376, JACK);
+          self.print_bitmap(376, suits[0]);
+        },
+        Rank::QUEEN => {
+          self.print_bitmap(376, QUEEN);
+          self.print_bitmap(376, suits[0]);
+        },
+        Rank::KING => {
+          self.print_bitmap(376, KING);
+          self.print_bitmap(376, suits[0]);
+        },
+    }
+
+    self.align_right();
+    self.write(format!("{} of {}\n", rank, suit));
+    self.write(format!("{}\n", to_char(rank)));
   }
 
   /// Print a bitmap in ~255 byte stripes.
@@ -93,4 +169,58 @@ impl Printer {
   fn begin_bitmap(&mut self, w: u8, h: u8) {
     self.file.write_all(&[18, 42, h, w]).unwrap();
   }
+
+  fn align_left(&mut self) {
+    self.write3(27, 97, 0);
+  }
+
+  fn align_right(&mut self) {
+    self.write3(27, 97, 2);
+  }
+
+  fn write1(&mut self, b: u8) {
+    self.file.write_all(&[b]).unwrap();
+  }
+
+  fn write2(&mut self, b1: u8, b2: u8) {
+    self.file.write_all(&[b1, b2]).unwrap();
+  }
+
+  fn write3(&mut self, b1: u8, b2: u8, b3: u8) {
+    self.file.write_all(&[b1, b2, b3]).unwrap();
+  }
+
+  fn write4(&mut self, b1: u8, b2: u8, b3: u8, b4: u8) {
+    self.file.write_all(&[b1, b2, b3, b4]).unwrap();
+  }
+
+  fn write(&mut self, s: String) {
+    self
+      .file
+      .write_all(s.as_bytes())
+      .unwrap();
+  }
+
+  fn wait(&self) {
+    thread::sleep(Duration::from_millis(100));
+  }
+}
+
+fn to_char(r: &Rank) -> String {
+  match r {
+    Rank::ACE => "A",
+    Rank::TWO => "2",
+    Rank::THREE => "3",
+    Rank::FOUR => "4",
+    Rank::FIVE => "5",
+    Rank::SIX => "6",
+    Rank::SEVEN => "7",
+    Rank::EIGHT => "8",
+    Rank::NINE => "9",
+    Rank::TEN => "10",
+    Rank::JACK => "J",
+    Rank::QUEEN => "Q",
+    Rank::KING => "K",
+  }
+  .to_string()
 }
