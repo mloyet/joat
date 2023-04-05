@@ -62,6 +62,7 @@ impl Printer {
   fn write_suit(&mut self, suits: &[&[u8]], suit: Suit, rank: &Rank) {
     self.align_left();
     self.large();
+    self.newlines(1);
     self.write(format!("{}\n", to_char(rank)));
     self.medium();
     self.write(format!("{} of {}\n", rank, suit));
@@ -69,70 +70,108 @@ impl Printer {
 
     match rank {
         Rank::ACE => {
-          self.write("\n\n\n\n".to_string());
+          self.newlines(5);
           self.print_bitmap(376, suits[0]);
-          self.write("\n\n\n\n".to_string());
+          self.newlines(5);
         },
         Rank::TWO => {
-          self.write("\n\n".to_string());
+          self.newlines(3);
           self.print_bitmap(376, suits[0]);
+          self.newlines(3);
           self.print_bitmap(376, suits[0]);
-          self.write("\n\n".to_string());
+          self.newlines(3);
         },
         Rank::THREE => {
+          self.newlines(3);
           self.print_bitmap(376, suits[0]);
+          self.newlines(3);
           self.print_bitmap(376, suits[0]);
+          self.newlines(3);
           self.print_bitmap(376, suits[0]);
+          self.newlines(3);
         },
         Rank::FOUR => {
-          self.write("\n".to_string());
+          self.newlines(3);
           self.print_bitmap(376, suits[1]);
-          self.write("\n".to_string());
+          self.newlines(3);
           self.print_bitmap(376, suits[1]);
-          self.write("\n".to_string());
+          self.newlines(3);
         },
         Rank::FIVE => {
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
           self.print_bitmap(376, suits[0]);
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
         },
         Rank::SIX => {
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
         },
         Rank::SEVEN =>{
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
           self.print_bitmap(376, suits[2]);
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
         },
         Rank::EIGHT => {
+          self.newlines(2);
           self.print_bitmap(376, suits[2]);
+          self.newlines(2);
           self.print_bitmap(376, suits[2]);
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
+          self.newlines(2);
         },
         Rank::NINE => {
+          self.newlines(2);
           self.print_bitmap(376, suits[2]);
+          self.newlines(2);
           self.print_bitmap(376, suits[2]);
+          self.newlines(2);
           self.print_bitmap(376, suits[2]);
+          self.newlines(2);
         },
         Rank::TEN => {
+          self.newlines(1);
           self.print_bitmap(376, suits[1]);
+          self.newlines(1);
           self.print_bitmap(376, suits[2]);
+          self.newlines(1);
           self.print_bitmap(376, suits[1]);
+          self.newlines(1);
           self.print_bitmap(376, suits[2]);
+          self.newlines(1);
         },
         Rank::JACK => {
+          self.newlines(2);
           self.print_bitmap(376, JACK);
+          self.newlines(1);
           self.print_bitmap(376, suits[0]);
+          self.newlines(2);
         },
         Rank::QUEEN => {
+          self.newlines(2);
           self.print_bitmap(376, QUEEN);
+          self.newlines(1);
           self.print_bitmap(376, suits[0]);
+          self.newlines(2);
         },
         Rank::KING => {
+          self.newlines(2);
           self.print_bitmap(376, KING);
+          self.newlines(1);
           self.print_bitmap(376, suits[0]);
+          self.newlines(2);
         },
     }
 
@@ -141,6 +180,7 @@ impl Printer {
     self.write(format!("{} of {}\n", rank, suit));
     self.large();
     self.write(format!("{}\n", to_char(rank)));
+    self.newlines(2);
   }
 
   /// Print a bitmap in ~255 byte stripes.
@@ -191,6 +231,12 @@ impl Printer {
 
   fn small(&mut self) {
     self.write3(27, 33, 0);
+  }
+
+  fn newlines(&mut self, n: usize) {
+    for _ in 0..n {
+      self.write("\n".to_string());
+    }
   }
 
   fn write1(&mut self, b: u8) {
