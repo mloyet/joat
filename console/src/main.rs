@@ -3,7 +3,7 @@
 //! Currently doesn't really make an effort to receive messages.
 
 use std::{
-  io::{self, BufRead},
+  io::{self, BufRead, Write},
   net::TcpListener,
 };
 
@@ -30,6 +30,9 @@ fn main() -> io::Result<()> {
     let mut handle = stdin.lock();
     loop {
       print!("> ");
+      io::stdout().flush().unwrap();
+      line.clear();
+
       use Message::*;
       handle.read_line(&mut line)?;
 
