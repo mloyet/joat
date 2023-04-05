@@ -94,7 +94,7 @@ fn main() -> io::Result<()> {
             prot.send_msg(PrintCard(Card(suit, rank))).unwrap();
           }
         } else if cmd == "print" {
-          prot.send_msg(Print(arg.to_string())).unwrap();
+          prot.send_msg(Print(format!("{}\n", arg))).unwrap();
           continue;
         }
       }
