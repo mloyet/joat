@@ -3,7 +3,7 @@ use std::{
   fs::{File, OpenOptions},
   io::Write,
   thread,
-  time::Duration,
+  time::Duration, sync::mpsc::Receiver,
 };
 
 use protocol::{Card, Rank, Suit};
@@ -12,12 +12,13 @@ use crate::bitmaps::{CLUBS, DIAMONDS, HEARTS, JACK, KING, QUEEN, SPADES};
 
 pub struct Printer {
   file: File,
+  receiver: Receiver<Card>,
 }
 
 impl Printer {
-  pub fn start(filename: &str) {
+  pub fn start(filename: &str, receiver: Receiver<Card>) {
     let file = OpenOptions::new().write(true).open(filename).unwrap();
-    let mut printer = Self { file };
+    let mut printer = Self { file, receiver };
     thread::Builder::new()
       .name("printer".to_string())
       .spawn(move || printer.run())
@@ -27,9 +28,10 @@ impl Printer {
   /// Private worker thread loop
   fn run(&mut self) {
     self.initialize();
-    self.print_bitmap(376, SPADES[1]);
-    self.print_bitmap(376, KING);
-    self.write_card(&Card(Suit::SPADE, Rank::KING))
+    loop {
+      let card = self.receiver.recv().unwrap();
+      self.write_card(&card);
+    }
   }
 
   fn initialize(&mut self) {
@@ -45,10 +47,6 @@ impl Printer {
     self.write4(4, 8, 12, 16); // ...every 4 columns,
     self.write4(20, 24, 28, 0); // 0 marks end-of-list.
     self.wait();
-    self
-      .file
-      .write_all("Initialization Complete.\n".as_bytes())
-      .unwrap();
   }
 
   fn write_card(&mut self, card: &Card) {

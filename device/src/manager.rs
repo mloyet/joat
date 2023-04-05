@@ -5,6 +5,7 @@ use std::sync::mpsc::channel;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 
+use protocol::Card;
 use protocol::{Message, Protocol};
 
 use crate::lcd::LCDCommand;
@@ -19,6 +20,7 @@ pub struct Manager {
   prot: Protocol,
   numpad_receiver: Receiver<Message>,
   lcd_sender: Sender<LCDCommand>,
+  printer_sender: Sender<Card>,
 }
 
 impl Manager {
@@ -26,6 +28,7 @@ impl Manager {
   pub fn new(numpad_name: &str, lcd_name: &str, printer_name: &str) -> Self {
     let (numpad_sender, numpad_receiver) = channel();
     let (lcd_sender, lcd_receiver) = channel();
+    let (printer_sender, printer_receiver) = channel();
 
     println!("[manager] Creating protocol");
     let prot = Protocol::new(TcpStream::connect("127.0.0.1:8000").unwrap());
@@ -40,13 +43,14 @@ impl Manager {
     println!("[manager] done.");
 
     println!("[manager] Creating Printer");
-    Printer::start(printer_name);
+    Printer::start(printer_name, printer_receiver);
     println!("[manager] done.");
 
     Self {
       prot,
       numpad_receiver,
       lcd_sender,
+      printer_sender,
     }
   }
 
@@ -55,6 +59,8 @@ impl Manager {
   /// All peripheral signals will be sent along over the protocol.
   ///
   /// Some rearchitecting should be done here...
+  ///
+  /// Protocol should be made asymmetric...
   pub fn run(&mut self) {
     loop {
       let msg = self.prot.read_msg().unwrap();
@@ -70,7 +76,9 @@ impl Manager {
           let msg = self.numpad_receiver.recv().unwrap();
           self.prot.send_msg(msg).expect("Message send failed");
         }
-        _ => panic!("Unexpected message"),
+        PrintCard(card) => self.printer_sender.send(card).unwrap(),
+        RequestScan => todo!(),
+        _ => panic!("Server shouldn't send these messages... hm..."),
       };
     }
   }
