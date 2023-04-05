@@ -61,8 +61,11 @@ impl Printer {
 
   fn write_suit(&mut self, suits: &[&[u8]], suit: Suit, rank: &Rank) {
     self.align_left();
+    self.large();
     self.write(format!("{}\n", to_char(rank)));
+    self.medium();
     self.write(format!("{} of {}\n", rank, suit));
+    self.small();
 
     match rank {
         Rank::ACE => {
@@ -134,7 +137,9 @@ impl Printer {
     }
 
     self.align_right();
+    self.medium();
     self.write(format!("{} of {}\n", rank, suit));
+    self.large();
     self.write(format!("{}\n", to_char(rank)));
   }
 
@@ -174,6 +179,18 @@ impl Printer {
 
   fn align_right(&mut self) {
     self.write3(27, 97, 2);
+  }
+
+  fn large(&mut self) {
+    self.write3(27, 33, 48);
+  }
+
+  fn medium(&mut self) {
+    self.write3(27, 33, 16);
+  }
+
+  fn small(&mut self) {
+    self.write3(27, 33, 0);
   }
 
   fn write1(&mut self, b: u8) {
