@@ -28,7 +28,9 @@ fn main() -> io::Result<()> {
     let mut line = String::new();
     let stdin = io::stdin();
     let mut handle = stdin.lock();
+
     loop {
+      println!("{}", HELP);
       print!("> ");
       io::stdout().flush().unwrap();
       line.clear();
