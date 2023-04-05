@@ -37,6 +37,7 @@ fn main() -> io::Result<()> {
 
       use Message::*;
       handle.read_line(&mut line)?;
+      line.pop(); // remove newline.
 
       // check for the single word commands.
       if line == "clear" {
