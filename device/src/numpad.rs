@@ -8,7 +8,7 @@ use std::thread;
 
 use protocol::Message;
 
-use crate::lcd::LCDCommand;
+use crate::lcd::{LCDCommand, CLUB, DIAMOND, HEART, SPADE};
 
 /// Object that encapsulates the numpad peripheral.
 ///
@@ -50,10 +50,12 @@ impl Numpad {
     let mut ascii = Vec::new();
 
     // helper for matching logic
-    let mut push_and_send = |c: char| {
-      ascii.push(c);
-      self.to_lcd.send(LCDCommand::Write(c.into())).unwrap();
-    };
+    macro_rules! push_and_send {
+      ($x:expr) => {{
+        ascii.push($x);
+        self.to_lcd.send(LCDCommand::Write($x.into())).unwrap();
+      }};
+    }
 
     loop {
       let event = InputEvent::blocking_read_from_file(&mut self.file);
@@ -64,23 +66,28 @@ impl Numpad {
         continue;
       }
 
-      // codes taken from the linux source code.
+      // event codes taken from the linux source code.
       // https://github.com/raspberrypi/linux/blob/rpi-5.15.y/include/uapi/linux/input-event-codes.h.
       match event.code {
-        55 => push_and_send('*'),
-        71 => push_and_send('7'),
-        72 => push_and_send('8'),
-        73 => push_and_send('9'),
-        74 => push_and_send('-'),
-        75 => push_and_send('4'),
-        76 => push_and_send('5'),
-        77 => push_and_send('6'),
-        78 => push_and_send('+'),
-        79 => push_and_send('1'),
-        80 => push_and_send('2'),
-        81 => push_and_send('3'),
-        82 => push_and_send('0'),
-        98 => push_and_send('/'),
+        71 => push_and_send!('7'),
+        72 => push_and_send!('8'),
+        73 => push_and_send!('9'),
+        75 => push_and_send!('4'),
+        76 => push_and_send!('5'),
+        77 => push_and_send!('6'),
+        79 => push_and_send!('1'),
+        80 => push_and_send!('2'),
+        81 => push_and_send!('3'),
+        82 => push_and_send!('0'),
+        55 => push_and_send!(HEART),
+        74 => push_and_send!(DIAMOND),
+        78 => push_and_send!(SPADE),
+        98 => push_and_send!(CLUB),
+        // backspace
+        14 => {
+          ascii.pop();
+          self.to_lcd.send(LCDCommand::Write("\x0e".into())).unwrap();
+        }
         // equal/enter cuts off the string.
         96 | 117 => {
           self.to_lcd.send(LCDCommand::Write("\n".into())).unwrap();

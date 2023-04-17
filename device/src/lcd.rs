@@ -8,7 +8,7 @@ use std::thread;
 /// A command that can be sent to the LCD screen
 pub enum LCDCommand {
   Write(String),
-  Clear
+  Clear,
 }
 
 /// Object that encapsulates the LCD peripheral.
@@ -20,12 +20,28 @@ pub struct LCD {
   receiver: Receiver<LCDCommand>,
 }
 
+pub const HEART: char = '\x00';
+pub const DIAMOND: char = '\x01';
+pub const SPADE: char = '\x02';
+pub const CLUB: char = '\x03';
+
+const SUITS_INIT: &str = "\x1b[LG000000a1f0e040000;\
+                          \x1b[LG10000040e1f0e0400;\
+                          \x1b[LG200040e0e1f040e00;\
+                          \x1b[LG3000e0e1f1f040e00;";
+
 impl LCD {
   /// Public static funciton to fork off worker thread
   pub fn start(filename: &str, receiver: Receiver<LCDCommand>) {
-    let file = OpenOptions::new().write(true).open(filename).unwrap();
+    let mut file = OpenOptions::new().write(true).open(filename).unwrap();
+    file
+      .write(SUITS_INIT.as_bytes())
+      .expect("Failed to init suits");
     let mut lcd = Self { file, receiver };
-    thread::Builder::new().name("lcd".to_string()).spawn(move || lcd.run()).unwrap();
+    thread::Builder::new()
+      .name("lcd".to_string())
+      .spawn(move || lcd.run())
+      .unwrap();
   }
 
   /// Private worker thread loop
@@ -35,7 +51,7 @@ impl LCD {
       use LCDCommand::*;
       match cmd {
         Write(s) => self.write(&s),
-        Clear => self.clear()
+        Clear => self.clear(),
       }
     }
   }
