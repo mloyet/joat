@@ -108,6 +108,28 @@ impl Protocol {
   }
 }
 
+impl From<usize> for Rank {
+  fn from(value: usize) -> Self {
+    use Rank::*;
+    match value {
+      1 => ACE,
+      2 => TWO,
+      3 => THREE,
+      4 => FOUR,
+      5 => FIVE,
+      6 => SIX,
+      7 => SEVEN,
+      8 => EIGHT,
+      9 => NINE,
+      10 => TEN,
+      11 => JACK,
+      12 => QUEEN,
+      13 => KING,
+      _ => panic!(),
+    }
+  }
+}
+
 impl Display for Suit {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
