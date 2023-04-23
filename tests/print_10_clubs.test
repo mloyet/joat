@@ -1,0 +1,3 @@
+>"Clear"
+#The 10 of Clubs should print
+>{"PrintCard":["CLUB","TEN"]}

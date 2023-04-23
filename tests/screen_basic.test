@@ -1,0 +1,3 @@
+>"Clear"
+#Should see "Hello!" on the screen.
+>{"Print":"Hello!"}

@@ -1,0 +1,3 @@
+>"Clear"
+#The King of hearts should print
+>{"PrintCard":["HEART","KING"]}

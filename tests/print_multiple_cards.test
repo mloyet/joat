@@ -1,0 +1,6 @@
+>"Clear"
+#The 8 of Spades should print 4 times
+>{"PrintCard":["SPADE", "EIGHT"]}
+>{"PrintCard":["SPADE", "EIGHT"]}
+>{"PrintCard":["SPADE", "EIGHT"]}
+>{"PrintCard":["SPADE", "EIGHT"]}
