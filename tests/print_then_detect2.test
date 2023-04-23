@@ -1,0 +1,10 @@
+>"Clear"
+#The ace of clubs and 2 of spades should print
+>{"PrintCard":["CLUB","ACE"]}
+>{"PrintCard":["SPADE","TWO"]}
+#When the card is in the view of the camera hit enter.
+>"ReadInput"
+<{"Line":""}
+#Requesting detection, ordering may be wrong.
+<"RequestScan"
+>{"DetectedCards":[["SPADE","TWO"], ["CLUB","ACE"]]}

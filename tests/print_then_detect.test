@@ -1,0 +1,9 @@
+>"Clear"
+#The 5 of spades should print
+>{"PrintCard":["HEART","FIVE"]}
+#When the card is in the view of the camera hit enter.
+>"ReadInput"
+<{"Line":""}
+#Requesting detection
+<"RequestScan"
+>{"DetectedCards":[["HEART","FIVE"]]}
