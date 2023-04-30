@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from ultralytics import YOLO
 
 model = YOLO('best.pt')  # load a custom model

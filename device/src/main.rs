@@ -12,7 +12,7 @@ static LCD: &str = "/dev/lcd";
 static PRINTER: &str = "/dev/ttyAMA0";
 static CAMERA: &str = "/dev/ttyAMA0";
 
-static SCRIPT: &str = "/bin/detect";
+static SCRIPT: &str = "~/joat/model/detection.py";
 
 fn main() {
   println!("[main] Creating manager");
