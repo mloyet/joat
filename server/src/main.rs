@@ -1,3 +1,7 @@
+mod deck;
+mod player;
+mod gofish;
+
 use protocol::{Message, Protocol};
 use std::{fs::File, net::TcpListener};
 

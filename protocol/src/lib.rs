@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{fmt::Display, fs::File, io::Write, net::TcpStream};
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq, Hash, Clone, Eq)]
 pub enum Suit {
   HEART,
   DIAMOND,
@@ -9,7 +9,7 @@ pub enum Suit {
   CLUB,
 }
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq, Hash, Clone, Eq)]
 pub enum Rank {
   ACE,
   TWO,
@@ -26,7 +26,7 @@ pub enum Rank {
   KING,
 }
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq, Hash, Clone, Eq)]
 pub struct Card(pub Suit, pub Rank);
 
 #[derive(Serialize, Deserialize, PartialEq)]
@@ -125,6 +125,19 @@ impl From<usize> for Rank {
       11 => JACK,
       12 => QUEEN,
       13 => KING,
+      _ => panic!(),
+    }
+  }
+}
+
+impl From<usize> for Suit {
+  fn from(value: usize) -> Self {
+    use Suit::*;
+    match value {
+      0 => HEART,
+      1 => DIAMOND,
+      2 => CLUB,
+      4 => SPADE,
       _ => panic!(),
     }
   }
