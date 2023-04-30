@@ -56,7 +56,8 @@ impl Camera {
     receiver: Receiver<CameraCommand>,
     sender: Sender<DetectResult>,
   ) {
-    let mut cmd = Command::new(scriptname)
+    let mut cmd = Command::new("python3")
+      .args(&[scriptname])
       .stdout(Stdio::piped())
       .stdin(Stdio::piped())
       .spawn()
