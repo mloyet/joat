@@ -56,7 +56,6 @@ impl Camera {
     receiver: Receiver<CameraCommand>,
     sender: Sender<DetectResult>,
   ) {
-    println!("{}", scriptname);
     let mut cmd = Command::new(scriptname)
       .stdout(Stdio::piped())
       .stdin(Stdio::piped())
