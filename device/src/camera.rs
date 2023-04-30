@@ -82,7 +82,10 @@ impl Camera {
       let _ = self.receiver.recv().unwrap();
       self.script_in.write_all(self.fname.as_bytes()).unwrap();
       let cards = self.read_result();
-      self.sender.send(cards.expect("Failed to parse script output")).unwrap();
+      self
+        .sender
+        .send(cards.expect("Failed to parse script output"))
+        .unwrap();
     }
   }
 
@@ -100,13 +103,18 @@ impl Camera {
   }
 
   fn rank(&mut self) -> io::Result<Rank> {
-    Ok(
-      self
-        .word()?
-        .parse::<usize>()
-        .map_err(|e| Error::new(ErrorKind::Other, e))?
-        .into(),
-    )
+    let r = self.word()?;
+    Ok(if r == "A" {
+      1.into()
+    } else if r == "J" {
+      11.into()
+    } else if r == "Q" {
+      12.into()
+    } else if r == "K" {
+      13.into()
+    } else {
+      r.parse::<usize>().unwrap().into()
+    })
   }
 
   fn suit(&mut self) -> io::Result<Suit> {
