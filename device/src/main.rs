@@ -11,8 +11,8 @@ static KEYBOARD: &str = "/dev/input/event0";
 static LCD: &str = "/dev/lcd";
 static PRINTER: &str = "/dev/ttyAMA0";
 
-static CAMERA: &str = "~/img/board.jpeg";
-static SCRIPT: &str = "~/joat/model/detection.py";
+static CAMERA: &str = "/home/pi/img/board.jpeg";
+static SCRIPT: &str = "/home/pi/joat/model/detection.py";
 
 fn main() {
   println!("[main] Creating manager");
