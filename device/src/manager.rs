@@ -8,6 +8,9 @@ use std::sync::mpsc::Sender;
 use protocol::Card;
 use protocol::{Message, Protocol};
 
+use crate::camera::Camera;
+use crate::camera::CameraCommand;
+use crate::camera::DetectResult;
 use crate::lcd::LCDCommand;
 use crate::lcd::LCD;
 use crate::numpad::Numpad;
@@ -21,14 +24,24 @@ pub struct Manager {
   numpad_receiver: Receiver<Message>,
   lcd_sender: Sender<LCDCommand>,
   printer_sender: Sender<Card>,
+  camera_sender: Sender<CameraCommand>,
+  detect_receiver: Receiver<DetectResult>,
 }
 
 impl Manager {
   /// Create a new manager. Should be a singleton, but not enforced.
-  pub fn new(numpad_name: &str, lcd_name: &str, printer_name: &str) -> Self {
+  pub fn new(
+    numpad_name: &str,
+    lcd_name: &str,
+    printer_name: &str,
+    camera_name: &str,
+    script_name: &str,
+  ) -> Self {
     let (numpad_sender, numpad_receiver) = channel();
     let (lcd_sender, lcd_receiver) = channel();
     let (printer_sender, printer_receiver) = channel();
+    let (camera_sender, camera_receiver) = channel();
+    let (detect_sender, detect_receiver) = channel();
 
     println!("[manager] Creating protocol");
     let prot = Protocol::new(TcpStream::connect("127.0.0.1:8000").unwrap());
@@ -46,11 +59,17 @@ impl Manager {
     Printer::start(printer_name, printer_receiver);
     println!("[manager] done.");
 
+    println!("[manager] Creating Camera");
+    Camera::start(camera_name, script_name, camera_receiver, detect_sender);
+    println!("[manager] done.");
+
     Self {
       prot,
       numpad_receiver,
       lcd_sender,
       printer_sender,
+      camera_sender,
+      detect_receiver,
     }
   }
 
@@ -77,7 +96,11 @@ impl Manager {
           self.prot.send_msg(msg).expect("Message send failed");
         }
         PrintCard(card) => self.printer_sender.send(card).unwrap(),
-        RequestScan => todo!(),
+        RequestScan => {
+          self.camera_sender.send(CameraCommand::RequestScan).unwrap();
+          let cards = self.detect_receiver.recv().unwrap();
+          self.prot.send_msg(DetectedCards(cards)).unwrap();
+        }
         _ => panic!("Server shouldn't send these messages... hm..."),
       };
     }
