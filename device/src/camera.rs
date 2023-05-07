@@ -82,6 +82,7 @@ impl Camera {
     loop {
       let _ = self.receiver.recv().unwrap();
       self.script_in.write_all(self.fname.as_bytes()).unwrap();
+      self.script_in.write_all(&[b'\n']).unwrap();
       println!("[camera] Running detection on {}", self.fname);
       let cards = self.read_result().expect("Failed to parse script output");
       println!("[camera] Detected {} cards", cards.len());
