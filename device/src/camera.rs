@@ -81,11 +81,13 @@ impl Camera {
   fn run(&mut self) {
     loop {
       let _ = self.receiver.recv().unwrap();
+      println!("[camera] Running detection");
       self.script_in.write_all(self.fname.as_bytes()).unwrap();
-      let cards = self.read_result();
+      let cards = self.read_result().expect("Failed to parse script output");
+      println!("[camera] Detected {} cards", cards.len());
       self
         .sender
-        .send(cards.expect("Failed to parse script output"))
+        .send(cards)
         .unwrap();
     }
   }
@@ -136,16 +138,16 @@ impl Camera {
   fn read_result(&mut self) -> io::Result<DetectResult> {
     let mut result = Vec::new();
     loop {
+      // Continue?
+      match self.script_out.peek().unwrap().as_ref().unwrap() {
+        b'.' => break,
+        _ => {}
+      }
+
       // Read in a card.
       let number = self.rank()?;
       let suit = self.suit()?;
       result.push(Card(suit, number));
-
-      // Continue?
-      match self.script_out.peek().unwrap().as_ref().unwrap() {
-        b'.' => break,
-        _ => continue,
-      }
     }
     Ok(result)
   }
