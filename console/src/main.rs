@@ -13,6 +13,7 @@ const HELP: &str = "Commands:
     clear                       Clear the device screen.
     scan                        Scan the camera.
     read                        Read line from the keyboard.
+    wait                        Take a message from the device.
     print_card <rank> <suit>    Print out a card on the receipt printer.
     print <msg>                 Print a message to the LCD screen.";
 
@@ -54,6 +55,20 @@ fn main() -> io::Result<()> {
       }
       if line == "help" {
         println!("{}", HELP);
+      }
+      if line == "wait" {
+        match prot.read_msg().unwrap() {
+          Message::Line(s) => println!("User typed: {}", s),
+          Message::DetectedCards(cs) => {
+            print!("Detected:");
+            for card in cs {
+              print!(" {}", card);
+            } 
+            println!();
+          }
+          _ => println!("Got unexpected message.")
+        }
+        continue;
       }
 
       // check for commands with arguments.

@@ -160,3 +160,10 @@ impl Display for Rank {
     }
   }
 }
+
+impl Display for Card {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    let Card(s, r) = self;
+    write!(f, "{} {}", s, r)
+  }
+}
