@@ -103,8 +103,8 @@ impl Numpad {
 ///
 /// https://github.com/raspberrypi/linux/blob/rpi-5.15.y/drivers/input/input-compat.h.
 struct InputEvent {
-  sec: u32,
-  usec: u32,
+  sec: u64,
+  usec: u64,
   typ: u16,
   code: u16,
   value: i32,
@@ -113,14 +113,14 @@ struct InputEvent {
 impl InputEvent {
   /// Hopefully this works as intended and is blocking...
   fn blocking_read_from_file(file: &mut File) -> Self {
-    let mut raw_struct = [0; 16];
+    let mut raw_struct = [0; 24];
     file.read_exact(&mut raw_struct).unwrap();
 
-    let (sec, rest) = raw_struct.split_at(4);
-    let sec = u32::from_ne_bytes(sec.try_into().unwrap());
+    let (sec, rest) = raw_struct.split_at(8);
+    let sec = u64::from_ne_bytes(sec.try_into().unwrap());
 
-    let (usec, rest) = rest.split_at(4);
-    let usec = u32::from_ne_bytes(usec.try_into().unwrap());
+    let (usec, rest) = rest.split_at(8);
+    let usec = u64::from_ne_bytes(usec.try_into().unwrap());
 
     let (typ, rest) = rest.split_at(2);
     let typ = u16::from_ne_bytes(typ.try_into().unwrap());
