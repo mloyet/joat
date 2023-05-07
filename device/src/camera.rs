@@ -85,10 +85,7 @@ impl Camera {
       self.script_in.write_all(self.fname.as_bytes()).unwrap();
       let cards = self.read_result().expect("Failed to parse script output");
       println!("[camera] Detected {} cards", cards.len());
-      self
-        .sender
-        .send(cards)
-        .unwrap();
+      self.sender.send(cards).unwrap();
     }
   }
 
@@ -141,7 +138,7 @@ impl Camera {
       // Continue?
       match self.script_out.peek().unwrap().as_ref().unwrap() {
         b'.' => break,
-        _ => {}
+        x => println!("{}", x),
       }
 
       // Read in a card.
