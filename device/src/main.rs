@@ -11,7 +11,7 @@ static KEYBOARD: &str = "/dev/input/event0";
 static LCD: &str = "/dev/lcd";
 static PRINTER: &str = "/dev/ttyAMA0";
 
-static CAMERA: &str = "/home/pi/img/board.jpeg";
+static CAMERA: &str = "/home/pi/img/board.jpg";
 static SCRIPT: &str = "/home/pi/joat/model/detection.py";
 
 fn main() {
