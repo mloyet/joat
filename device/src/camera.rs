@@ -81,8 +81,8 @@ impl Camera {
   fn run(&mut self) {
     loop {
       let _ = self.receiver.recv().unwrap();
-      println!("[camera] Running detection");
       self.script_in.write_all(self.fname.as_bytes()).unwrap();
+      println!("[camera] Running detection on {}", self.fname);
       let cards = self.read_result().expect("Failed to parse script output");
       println!("[camera] Detected {} cards", cards.len());
       self.sender.send(cards).unwrap();
@@ -137,13 +137,19 @@ impl Camera {
     loop {
       // Continue?
       match self.script_out.peek().unwrap().as_ref().unwrap() {
-        b'.' => break,
+        b'.' => {
+          self.script_out.next(); // .
+          self.script_out.next(); // newline
+          println!("[camera] reached end of detection");
+          break;
+        },
         x => println!("{}", x),
       }
 
       // Read in a card.
       let number = self.rank()?;
       let suit = self.suit()?;
+      println!("[camera] {} {}", number, suit);
       result.push(Card(suit, number));
     }
     Ok(result)
