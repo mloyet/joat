@@ -38,7 +38,7 @@ impl Deck {
     let n = self.order[self.pos];
     self.pos += 1;
     let suit = (n / 13).into();
-    let rank = (n % 13).into();
+    let rank = ((n % 13) + 1).into();
 
     Some(Card(suit, rank))
   }
