@@ -144,7 +144,7 @@ impl Camera {
           println!("[camera] reached end of detection");
           break;
         },
-        x => println!("{}", x),
+        _ => {}
       }
 
       // Read in a card.
