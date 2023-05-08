@@ -134,17 +134,26 @@ impl GoFishGame {
       cur.clear();
       cur.send_msg("Sorry... Go fish!");
       match self.deck.draw() {
-        Some(c) => cur.send_card(c),
-        None => cur.send_msg("Oh no, no more cards!"),
+        Some(c) => {
+          if c.1 == rank {
+            cur.send_msg("Wow! You got the card!");
+            cur.send_card(c);
+          } else {
+            cur.send_card(c);
+            self.turn = (self.turn + 1) % self.players.len();
+          }
+        }
+        None => {
+          cur.send_msg("Oh no, no more cards!");
+          self.turn = (self.turn + 1) % self.players.len();
+        }
       }
-      // Advance the turn.
-      self.turn = (self.turn + 1) % self.players.len();
     } else {
       // Getting cards loop.
       target.clear();
       target.send_msg(&format!("Give up all of your {}s", rank));
       loop {
-        thread::sleep(Duration::new(1,0));
+        thread::sleep(Duration::new(1, 0));
         let cards = target.read_table();
         if cards.len() != expected.len() {
           continue;
