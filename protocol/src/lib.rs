@@ -137,7 +137,7 @@ impl From<usize> for Suit {
       0 => HEART,
       1 => DIAMOND,
       2 => CLUB,
-      4 => SPADE,
+      3 => SPADE,
       _ => panic!(),
     }
   }
