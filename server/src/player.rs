@@ -31,6 +31,7 @@ impl Player {
   }
 
   pub fn read_input(&mut self) -> String {
+    self.prot.send_msg(Message::ReadInput).unwrap();
     match self.prot.read_msg().unwrap() {
       Message::Line(s) => s,
       _ => panic!(),
@@ -38,6 +39,7 @@ impl Player {
   }
 
   pub fn read_table(&mut self) -> Vec<Card> {
+    self.prot.send_msg(Message::RequestScan).unwrap();
     match self.prot.read_msg().unwrap() {
       Message::DetectedCards(cs) => cs,
       _ => panic!(),

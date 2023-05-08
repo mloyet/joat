@@ -54,7 +54,7 @@ impl GoFishGame {
 
     // Target selection loop.
     cur.clear();
-    cur.send_msg("It's your turn, who do you want to take from?");
+    cur.send_msg("Who do you want to take from?");
     let target: usize;
     loop {
       let sel = cur.read_input();
