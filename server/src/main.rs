@@ -1,37 +1,38 @@
-use protocol::{Message, Protocol};
+mod deck;
+mod player;
+mod gofish;
+
+use gofish::GoFishGame;
+use protocol::Protocol;
 use std::{fs::File, net::TcpListener};
 
-fn handler(mut p: Protocol) -> std::io::Result<()> {
-  loop {
-    use Message::*;
-    p.send_msg(ReadInput)?;
-
-    let msg = p.read_msg()?;
-    match msg {
-      Line(str) => {
-        println!("Got a message: {}", str);
-        p.send_msg(Print("Got: ".to_string() + &str + "\n")).unwrap();
-      }
-      _ => panic!("Unexpected message"),
-    };
-  }
-}
+use crate::player::Player;
 
 fn main() -> std::io::Result<()> {
   let listener = TcpListener::bind("0.0.0.0:8000")?;
+
+  let mut game = GoFishGame::new();
+  let mut count = 0;
 
   for stream in listener.incoming() {
     let stream = stream?;
     println!("Attached to client {:?}", stream);
 
-    let mut prtcl = protocol::Protocol::new(stream);
-    let logfile = File::create("server.log")?;
-    prtcl.attach_logfile(logfile);
+    let mut prot = Protocol::new(stream);
+    let logfile = File::create(format!("/home/pi/logs/server{}.log", count))?;
+    prot.attach_logfile(logfile);
 
-    prtcl.send_msg(Message::Clear).expect("Failed to send screen clear");
+    let mut player = Player::new(prot);
+    player.clear();
 
-    if let Err(_) = handler(prtcl) {
-      println!("Disconnected.");
+    game.add_player(player);
+    count += 1;
+
+    // Not the best criteria in general, but it'll do for our system
+    if count == 2 {
+      game.begin();
+      game = GoFishGame::new();
+      count = 0;
     }
   }
 
