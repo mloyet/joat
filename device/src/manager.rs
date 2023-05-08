@@ -36,6 +36,7 @@ impl Manager {
     printer_name: &str,
     camera_name: &str,
     script_name: &str,
+    server_addr: &str,
   ) -> Self {
     let (numpad_sender, numpad_receiver) = channel();
     let (lcd_sender, lcd_receiver) = channel();
@@ -44,7 +45,7 @@ impl Manager {
     let (detect_sender, detect_receiver) = channel();
 
     println!("[manager] Creating protocol");
-    let prot = Protocol::new(TcpStream::connect("127.0.0.1:8000").unwrap());
+    let prot = Protocol::new(TcpStream::connect(server_addr).unwrap());
     println!("[manager] done.");
 
     println!("[manager] Creating Numpad");
