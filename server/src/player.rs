@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::collections::HashSet;
+use std::{collections::HashSet, time::Duration, thread};
 
 use protocol::{Card, Message, Protocol};
 
@@ -28,6 +28,7 @@ impl Player {
   pub fn send_card(&mut self, card: Card) {
     self.hand.insert(card.clone());
     self.prot.send_msg(Message::PrintCard(card)).unwrap();
+    thread::sleep(Duration::new(10, 0));
   }
 
   pub fn read_input(&mut self) -> String {
