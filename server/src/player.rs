@@ -18,7 +18,7 @@ impl Player {
   }
 
   pub fn send_msg(&mut self, msg: &str) {
-    self.prot.send_msg(Message::Print(msg.to_string())).unwrap();
+    self.prot.send_msg(Message::Print(msg.to_string() + "\n")).unwrap();
   }
 
   pub fn clear(&mut self) {

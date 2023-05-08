@@ -160,6 +160,7 @@ impl GoFishGame {
         }
         break;
       }
+      target.clear();
       target.send_msg("Thank you! Please discard the cards now.");
 
       // Giving cards to requestor
