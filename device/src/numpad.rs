@@ -86,7 +86,7 @@ impl Numpad {
         // backspace
         14 => {
           ascii.pop();
-          self.to_lcd.send(LCDCommand::Write("\x0e".into())).unwrap();
+          self.to_lcd.send(LCDCommand::Write("\x08".into())).unwrap();
         }
         // equal/enter cuts off the string.
         96 | 117 => {
