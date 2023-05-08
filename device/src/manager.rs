@@ -89,10 +89,6 @@ impl Manager {
         Print(s) => self.lcd_sender.send(LCDCommand::Write(s)).unwrap(),
         Clear => self.lcd_sender.send(LCDCommand::Clear).unwrap(),
         ReadInput => {
-          self
-            .lcd_sender
-            .send(LCDCommand::Write("Give Input: ".to_string()))
-            .unwrap();
           let msg = self.numpad_receiver.recv().unwrap();
           self.prot.send_msg(msg).expect("Message send failed");
         }
