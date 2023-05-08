@@ -149,10 +149,14 @@ impl GoFishGame {
         if cards.len() != expected.len() {
           continue;
         }
+        let mut matches = true;
         for card in cards {
           if !expected.contains(&card) {
-            continue;
+            matches = false;
           }
+        }
+        if !matches {
+          continue;
         }
         break;
       }
