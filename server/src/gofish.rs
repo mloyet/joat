@@ -37,7 +37,29 @@ impl GoFishGame {
     self.deal();
     loop {
       self.do_turn();
+      if self.game_over() {
+        break;
+      }
     }
+  }
+
+  pub fn game_over(&mut self) -> bool {
+    let mut num_sets = 0;
+    for player in self.players.iter() {
+      for r in 0..13 {
+        let mut c = 0;
+        for s in 0..3 {
+          let card = Card(s.into(), (r + 1).into());
+          if player.hand.contains(&card) {
+            c += 1;
+          }
+        }
+        if c == 4 {
+          num_sets += 1;
+        }
+      }
+    }
+    num_sets == 13
   }
 
   fn deal(&mut self) {
@@ -51,6 +73,12 @@ impl GoFishGame {
   fn do_turn(&mut self) {
     let len = self.players.len();
     let cur = &mut self.players[self.turn];
+
+    // Special case if no cards.
+    if cur.hand.is_empty() {
+      self.turn = (self.turn + 1) % self.players.len();
+      return;
+    }
 
     // Target selection loop.
     cur.clear();
@@ -159,13 +187,22 @@ impl GoFishGame {
           continue;
         }
         let mut matches = true;
-        for card in cards {
-          if !expected.contains(&card) {
+        for card in &cards {
+          if !expected.contains(card) {
             matches = false;
           }
         }
         if !matches {
           continue;
+        }
+        for card in cards {
+          target.hand.remove(&card);
+        }
+        // Curtesy draw.
+        if target.hand.is_empty() {
+          if let Some(c) = self.deck.draw() {
+            target.send_card(c);
+          }
         }
         break;
       }
