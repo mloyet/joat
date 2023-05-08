@@ -1,4 +1,4 @@
-use std::{io, net::TcpStream};
+use std::{io::{self, Write}, net::TcpStream};
 
 use protocol::{Card, Message, Protocol, Rank, Suit};
 
@@ -14,15 +14,18 @@ fn main() {
       Message::PrintCard(c) => println!("You were dealt a {}", c),
       Message::ReadInput => {
         print!("> ");
+        io::stdout().flush().unwrap();
         let mut buf = String::new();
         io::stdin().read_line(&mut buf).unwrap();
-        prot.send_msg(Message::Line(buf)).unwrap();
+        prot.send_msg(Message::Line(buf.trim().to_string())).unwrap();
       }
       Message::RequestScan => {
         println!("Type the cards (suit then rank)");
         print!("> ");
+        io::stdout().flush().unwrap();
         let mut buf = String::new();
         io::stdin().read_line(&mut buf).unwrap();
+        let buf = buf.trim().to_string();
         let mut words = buf.split(" ");
         let mut cards = Vec::new();
 
