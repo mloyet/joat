@@ -15,7 +15,7 @@ impl Deck {
       pos: 0,
     };
     for i in 0..52 {
-      res.order[i] = 0;
+      res.order[i] = i;
     }
     res
   }
