@@ -110,7 +110,7 @@ impl GoFishGame {
 
           if !found {
             cur.clear();
-            cur.send_msg("Must request a rank which you already have.");
+            cur.send_msg("Must request a rank which you have.");
             continue;
           }
           rank = r;

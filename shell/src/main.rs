@@ -29,6 +29,7 @@ fn main() {
         loop {
           match (words.next(), words.next()) {
             (Some(s), Some(r)) => {
+              println!("({} {})", s, r);
               use Rank::*;
               use Suit::*;
               let rank = match r {
