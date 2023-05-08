@@ -98,6 +98,7 @@ impl Printer {
           self.newlines(3);
         },
         Rank::FIVE => {
+          self.newlines(2);
           self.print_bitmap(376, suits[1]);
           self.newlines(2);
           self.print_bitmap(376, suits[0]);
